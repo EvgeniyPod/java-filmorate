@@ -102,8 +102,8 @@ public class UserController {
             }
             updateUser.setEmail(user.getEmail());
             updateUser.setLogin(user.getLogin());
-            updateUser.setName(updateUser.getName());
             updateUser.setName(user.getName());
+            updateUser.setBirthday(user.getBirthday());
             users.put(user.getId(), updateUser);
         } else {
             log.error("Передан пустой объект");
