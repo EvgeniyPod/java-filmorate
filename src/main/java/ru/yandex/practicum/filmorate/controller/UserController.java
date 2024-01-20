@@ -65,7 +65,7 @@ public class UserController {
         if(user != null) {
             User updateUser = users.get(user.getId());
 
-            if (updateUser == null) {
+            if(updateUser == null) {
                 log.error("Пользователь с id {} не найден", user.getId());
                 throw new ValidationException("Пользователь не найден");
             }

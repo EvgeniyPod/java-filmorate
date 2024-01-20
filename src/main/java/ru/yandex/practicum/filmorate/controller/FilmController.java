@@ -21,22 +21,22 @@ public class FilmController {
     @PostMapping("/films")
     public Film addFilm(@RequestBody Film film) {
         if(film != null) {
-            if (film.getName().isEmpty()) {
+            if(film.getName().isEmpty()) {
                 log.error("Фильм не имеет названия");
                 throw new ValidationException("Фильм должен иметь название");
             }
 
-            if (film.getDescription().length() > 200) {
+            if(film.getDescription().length() > 200) {
                 log.error("Описание фильма превышает лимит в 200 символов");
                 throw new ValidationException("Описание фильма не должно превышать более 200 символов");
             }
 
-            if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
+            if(film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
                 log.error("Релиз фильма состоялся раньше 28 декабря 1895 года");
                 throw new ValidationException("Релиз фильма не мог состояться раньше 28 декабря 1895 года");
             }
 
-            if (film.getDuration() < 0) {
+            if(film.getDuration() < 0) {
                 log.error("Продолжительность фильма отрицательное число");
                 throw new ValidationException("Продолжительность фильма не может быть отрицательным числом");
             }
@@ -53,22 +53,22 @@ public class FilmController {
     public Film updateFilm(@RequestBody Film film) {
         if(film != null && films.containsKey(film.getId())) {
             Film updateFilm = films.get(film.getId());
-            if (film.getName().isEmpty()) {
+            if(film.getName().isEmpty()) {
                 log.error("Фильм не имеет названия");
                 throw new ValidationException("Фильм должен иметь название");
             }
 
-            if (film.getDescription().length() > 200) {
+            if(film.getDescription().length() > 200) {
                 log.error("Описание фильма превышет лимит в 200 символов");
                 throw new ValidationException("Описание фильма не должно превышать более 200 символов");
             }
 
-            if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
+            if(film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
                 log.error("Релиз фильма состоялся раньше 28 декабря 1895 года");
                 throw new ValidationException("Релиз фильма не мог состояться раньше 28 декабря 1895 года");
             }
 
-            if (film.getDuration() < 0) {
+            if(film.getDuration() < 0) {
                 log.error("Продолжительность фильма отрицательное число");
                 throw new ValidationException("Продолжительность фильма не может быть отрицательным числом");
             }
