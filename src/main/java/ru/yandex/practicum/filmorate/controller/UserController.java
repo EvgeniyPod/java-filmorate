@@ -20,25 +20,25 @@ public class UserController {
 
     @PostMapping("/users")
     public User addUser(@RequestBody User user) {
-        if(user != null) {
-            if(user.getEmail().isEmpty()) {
+        if (user != null) {
+            if (user.getEmail().isEmpty()) {
                 log.error("Отсутствует адрес электронной почты");
                 throw new ValidationException("Адрес электронной почты не может быть пустым");
-            } else if(!user.getEmail().contains("@")) {
+            } else if (!user.getEmail().contains("@")) {
                 log.error("Отсутствует символ: '@'");
                 throw new ValidationException("В адресе электронной почты необходим символ '@'");
             }
 
-            if(user.getLogin().isEmpty()) {
+            if (user.getLogin().isEmpty()) {
                 log.error("Отсутсвует логин");
                 throw new ValidationException("Логин не может быть пустым");
-            } else if(user.getLogin().contains(" ")) {
+            } else if (user.getLogin().contains(" ")) {
                 log.error("В логине присутствуют пробелы");
                 throw new ValidationException("В логине не должны быть пробелы");
             }
 
             try {
-                if(user.getName().isEmpty()) {
+                if (user.getName().isEmpty()) {
                     log.error("При создании не указано имя пользователя");
                     user.setName(user.getLogin());
                 }
@@ -47,7 +47,7 @@ public class UserController {
                 user.setName(user.getLogin());
             }
 
-            if(user.getBirthday().isAfter(LocalDate.now())) {
+            if (user.getBirthday().isAfter(LocalDate.now())) {
                 log.error("День рождения пользователя указан в будущем");
                 throw new ValidationException("День рождения пользователя не может быть в будущем");
             }
@@ -62,32 +62,32 @@ public class UserController {
 
     @PutMapping("/users")
     public User updateUser(@RequestBody User user) {
-        if(user != null) {
+        if (user != null) {
             User updateUser = users.get(user.getId());
 
-            if(updateUser == null) {
+            if (updateUser == null) {
                 log.error("Пользователь с id {} не найден", user.getId());
                 throw new ValidationException("Пользователь не найден");
             }
 
-            if(user.getEmail().isEmpty()) {
+            if (user.getEmail().isEmpty()) {
                 log.error("Отсутствует адрес электронной почты");
                 throw new ValidationException("Адрес электронной почты не может быть пустым");
-            } else if(!user.getEmail().contains("@")) {
+            } else if (!user.getEmail().contains("@")) {
                 log.error("Отсутствует символ: '@'");
                 throw new ValidationException("В адресе электронной почты необходим символ '@'");
             }
 
-            if(user.getLogin().isEmpty()) {
+            if (user.getLogin().isEmpty()) {
                 log.error("Отсутсвует логин");
                 throw new ValidationException("Логин не может быть пустым");
-            } else if(user.getLogin().contains(" ")) {
+            } else if (user.getLogin().contains(" ")) {
                 log.error("В логине присутствуют пробелы");
                 throw new ValidationException("В логино не должны быть пробелы");
             }
 
             try {
-                if(user.getName().isEmpty()) {
+                if (user.getName().isEmpty()) {
                     log.error("При создании не указано имя пользователя");
                     user.setName(user.getLogin());
                 }
@@ -96,7 +96,7 @@ public class UserController {
                 user.setName(user.getLogin());
             }
 
-            if(user.getBirthday().isAfter(LocalDate.now())) {
+            if (user.getBirthday().isAfter(LocalDate.now())) {
                 log.error("День рождения пользователя указан в будущем");
                 throw new ValidationException("День рождения пользователя не может быть в будущем");
             }
