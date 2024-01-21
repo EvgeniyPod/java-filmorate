@@ -51,7 +51,7 @@ public class UserController {
     }
 
     private void validationExeption(User user) {
-        if (users == null) {
+        if (user == null) {
             log.error("Передан пустой объект");
             throw new ValidationException("Объект не может быть пустым");
         }
