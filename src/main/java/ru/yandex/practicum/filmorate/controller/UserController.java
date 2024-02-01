@@ -21,7 +21,7 @@ public class UserController {
 
     @PostMapping("/users")
     public User addUser(@RequestBody User user) {
-        validationExeption(user);
+        validate(user);
         user.setId(generatorId++);
         users.put(user.getId(), user);
         return user;
@@ -29,7 +29,7 @@ public class UserController {
 
     @PutMapping("/users")
     public User updateUser(@RequestBody User user) {
-        validationExeption(user);
+        validate(user);
         User updateUser = users.get(user.getId());
         if (updateUser == null) {
             log.error("Пользователь с id {} не найден", user.getId());
@@ -50,7 +50,7 @@ public class UserController {
         return new ArrayList<>(users.values());
     }
 
-    private void validationExeption(User user) {
+    private void validate(User user) {
         if (user == null) {
             log.error("Передан пустой объект");
             throw new ValidationException("Объект не может быть пустым");

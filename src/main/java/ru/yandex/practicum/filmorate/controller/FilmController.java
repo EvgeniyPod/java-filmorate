@@ -21,7 +21,7 @@ public class FilmController {
 
     @PostMapping("/films")
     public Film addFilm(@RequestBody Film film) {
-        validationExeption(film);
+        validate(film);
         film.setId(generatorId++);
         films.put(film.getId(), film);
         return film;
@@ -29,7 +29,7 @@ public class FilmController {
 
     @PutMapping("/films")
     public Film updateFilm(@RequestBody Film film) {
-        validationExeption(film);
+        validate(film);
         Film updateFilm = films.get(film.getId());
 
         if (updateFilm == null) {
@@ -51,7 +51,7 @@ public class FilmController {
         return new ArrayList<>(films.values());
     }
 
-    private void validationExeption(Film film) {
+    private void validate(Film film) {
         if (film == null) {
             log.error("Передан пустой объект");
             throw new ValidationException("Объект не может быть пустым");
