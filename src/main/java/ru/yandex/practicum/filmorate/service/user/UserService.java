@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.service.user;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.ArrayList;
@@ -36,7 +35,7 @@ public class UserService {
         User exfriend = userStorage.getUserById(friendId);
         Set<Integer> friendsOfUser = user.getFriends();
         Set<Integer> friendsOfFriend = exfriend.getFriends();
-        if(friendsOfUser.contains(friendId) && friendsOfFriend.contains(id)) {
+        if (friendsOfUser.contains(friendId) && friendsOfFriend.contains(id)) {
             friendsOfUser.remove(friendId);
             friendsOfFriend.remove(id);
         }
@@ -50,7 +49,7 @@ public class UserService {
         Set<Integer> friendsOfUser = new HashSet<>(user.getFriends());
         Set<Integer> friendsOfOtherUser = otherUser.getFriends();
         friendsOfUser.retainAll(friendsOfOtherUser);
-        for(int commonFriend : friendsOfUser) {
+        for (int commonFriend : friendsOfUser) {
             commonFriends.add(userStorage.getUserById(commonFriend));
         }
         return commonFriends;
@@ -59,7 +58,7 @@ public class UserService {
     public List<User> getFriendsOfUser(int id) {
         User user = userStorage.getUserById(id);
         List<User> friendsOfUser = new ArrayList<>();
-        if(!user.getFriends().isEmpty()) {
+        if (!user.getFriends().isEmpty()) {
             Set<Integer> friendsUser = user.getFriends();
             for (int friends : friendsUser) {
                 friendsOfUser.add(userStorage.getUserById(friends));
@@ -68,7 +67,7 @@ public class UserService {
         return friendsOfUser;
     }
 
-    public User getUserOutStorage(int id) {
+    public User getUserById(int id) {
         return userStorage.getUserById(id);
     }
 
@@ -80,7 +79,7 @@ public class UserService {
         return userStorage.updateUser(user);
     }
 
-    public List<User> getUsersOutStorage() {
+    public List<User> getUsers() {
         return userStorage.getUsers();
     }
 }

@@ -4,8 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import ru.yandex.practicum.filmorate.validation.ObjectIsNull;
 
@@ -20,6 +18,7 @@ public class FilmService {
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
 
+    @Autowired
     public FilmService(UserStorage userStorage, FilmStorage filmStorage) {
         this.userStorage = userStorage;
         this.filmStorage = filmStorage;
@@ -46,7 +45,7 @@ public class FilmService {
         return film;
     }
 
-    public List<Film> getTop10Films(Integer count) {
+    public List<Film> getTopFilms(Integer count) {
         List<Film> topFilms = new ArrayList<>();
         if (!filmStorage.getFilms().isEmpty()) {
             List<Film> allFilms = filmStorage.getFilms().stream().sorted((film1, film2) -> {
