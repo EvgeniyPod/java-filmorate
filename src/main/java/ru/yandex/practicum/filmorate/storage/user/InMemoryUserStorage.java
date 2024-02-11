@@ -1,10 +1,9 @@
-package ru.yandex.practicum.filmorate.controller;
+package ru.yandex.practicum.filmorate.storage.user;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.user.UserService;
 import ru.yandex.practicum.filmorate.validation.ValidationException;
 
 import java.time.LocalDate;
@@ -14,28 +13,22 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@RestController
-public class UserController {
+@Component
+public class InMemoryUserStorage implements UserStorage {
 
     private Map<Integer, User> users = new HashMap<>();
     private int generatorId = 1;
 
-    private UserService userService;
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
-    @PostMapping("/users")
-    public User addUser(@RequestBody User user) {
+    @Override
+    public User addUser(User user) {
         validate(user);
         user.setId(generatorId++);
         users.put(user.getId(), user);
         return user;
     }
 
-    @PutMapping("/users")
-    public User updateUser(@RequestBody User user) {
+    @Override
+    public User updateUser(User user) {
         validate(user);
         User updateUser = users.get(user.getId());
         if (updateUser == null) {
@@ -52,9 +45,14 @@ public class UserController {
         return user;
     }
 
-    @GetMapping("/users")
+    @Override
     public List<User> getUsers() {
         return new ArrayList<>(users.values());
+    }
+
+    @Override
+    public User getUserById(int id) {
+        return users.get(id);
     }
 
     private void validate(User user) {
