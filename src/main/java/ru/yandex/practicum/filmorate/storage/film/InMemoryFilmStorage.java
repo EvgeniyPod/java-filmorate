@@ -1,16 +1,16 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.util.StringUtils;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.validation.ObjectIsNull;
 import ru.yandex.practicum.filmorate.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -20,29 +20,36 @@ public class InMemoryFilmStorage implements FilmStorage {
     private int generatorId = 1;
 
     @Override
-    public Film addFilm(Film film) {
-        validate(film);
-        film.setId(generatorId++);
-        films.put(film.getId(), film);
+    public Film addFilm(@RequestBody Film film) {
+        if (film != null) {
+            validate(film);
+            if (film.getLikes() == null) {
+                Set<Integer> usersWhoLikeFilm = new HashSet<>();
+                film.setLikes(usersWhoLikeFilm);
+            }
+            film.setId(generatorId++);
+            films.put(film.getId(), film);
+        } else {
+            log.error("Передан пустой объект");
+            throw new NullPointerException("Объект не может быть пустым");
+        }
         return film;
     }
 
     @Override
-    public Film updateFilm(Film film) {
-        validate(film);
-        Film updateFilm = films.get(film.getId());
-
-        if (updateFilm == null) {
-            log.error("Фильм с id {} не найден", film.getId());
-            throw new ValidationException("Пользователь не найден");
+    public Film updateFilm(@RequestBody Film film) {
+        if (film != null && films.containsKey(film.getId())) {
+            validate(film);
+            Film updateFilm = films.get(film.getId());
+            updateFilm.setName(film.getName());
+            updateFilm.setDescription(film.getDescription());
+            updateFilm.setReleaseDate(film.getReleaseDate());
+            updateFilm.setDuration(film.getDuration());
+            films.put(film.getId(), updateFilm);
+        } else {
+            log.error("Передан пустой объект");
+            throw new NullPointerException("Объект не может быть пустым");
         }
-
-        updateFilm.setName(film.getName());
-        updateFilm.setDescription(film.getDescription());
-        updateFilm.setReleaseDate(film.getReleaseDate());
-        updateFilm.setDuration(film.getDuration());
-        films.put(film.getId(), updateFilm);
-
         return film;
     }
 
@@ -52,7 +59,10 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film getFilmById(int id) {
+    public Film getFilmById(@PathVariable int id) {
+        if (!films.containsKey(id)) {
+            throw new ObjectIsNull("Фильма с таким номерлм не сущесвует");
+        }
         return films.get(id);
     }
 

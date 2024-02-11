@@ -3,14 +3,14 @@ package ru.yandex.practicum.filmorate.storage.user;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.validation.ObjectIsNull;
 import ru.yandex.practicum.filmorate.validation.ValidationException;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -20,28 +20,36 @@ public class InMemoryUserStorage implements UserStorage {
     private int generatorId = 1;
 
     @Override
-    public User addUser(User user) {
-        validate(user);
-        user.setId(generatorId++);
-        users.put(user.getId(), user);
+    public User addUser(@RequestBody User user) {
+        if (user != null) {
+            validate(user);
+            if (user.getFriends() == null) {
+                Set<Integer> friendsOfUser = new HashSet<>();
+                user.setFriends(friendsOfUser);
+            }
+            user.setId(generatorId++);
+            users.put(user.getId(), user);
+        } else {
+            log.error("Передан пустой объект.");
+            throw new NullPointerException("Объект не может быть пустым");
+        }
         return user;
     }
 
     @Override
-    public User updateUser(User user) {
-        validate(user);
-        User updateUser = users.get(user.getId());
-        if (updateUser == null) {
-            log.error("Пользователь с id {} не найден", user.getId());
-            throw new ValidationException("Пользователь не найден");
+    public User updateUser(@RequestBody User user) {
+        if (user != null) {
+            User chosenUser = users.get(user.getId());
+            validate(user);
+            chosenUser.setName(user.getName());
+            chosenUser.setEmail(user.getEmail());
+            chosenUser.setLogin(user.getLogin());
+            chosenUser.setBirthday(user.getBirthday());
+            users.put(user.getId(), chosenUser);
+        } else {
+            log.error("Передан пустой объект.");
+            throw new NullPointerException("Объект не может быть пустым");
         }
-
-        updateUser.setEmail(user.getEmail());
-        updateUser.setLogin(user.getLogin());
-        updateUser.setName(user.getName());
-        updateUser.setBirthday(user.getBirthday());
-        users.put(user.getId(), updateUser);
-
         return user;
     }
 
@@ -51,7 +59,10 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User getUserById(int id) {
+    public User getUserById(@PathVariable int id) {
+        if (!users.containsKey(id)) {
+            throw new ObjectIsNull("Внимание пользователя с таким номером не существует!");
+        }
         return users.get(id);
     }
 

@@ -56,7 +56,7 @@ class FilmorateApplicationTests {
 
     @Test
     public void addNewFilmNull() {
-        Assertions.assertThrows(ValidationException.class, () -> filmController.addFilm(null));
+        Assertions.assertThrows(NullPointerException.class, () -> filmController.addFilm(null));
     }
 
     @Test
@@ -113,7 +113,7 @@ class FilmorateApplicationTests {
 
     @Test
     public void addNewUserNull() {
-        Assertions.assertThrows(ValidationException.class, () -> userController.addUser(null));
+        Assertions.assertThrows(NullPointerException.class, () -> userController.addUser(null));
     }
 
     @Test

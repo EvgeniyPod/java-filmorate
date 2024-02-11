@@ -5,16 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.user.UserService;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RestController
 public class UserController {
-
-    private Map<Integer, User> users = new HashMap<>();
-    private int generatorId = 1;
 
     private UserService userService;
 
@@ -36,6 +31,11 @@ public class UserController {
     @GetMapping("/users")
     public List<User> getUsers() {
         return userService.getUsers();
+    }
+
+    @GetMapping("/users/{id}")
+    public User getUserById(@PathVariable int id) {
+        return userService.getUserById(id);
     }
 
     @PutMapping("/users/{id}/friends/{friendId}")
