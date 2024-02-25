@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -61,9 +62,32 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film getFilmById(@PathVariable int id) {
         if (!films.containsKey(id)) {
-            throw new ObjectIsNull("Фильма с таким номерлм не сущесвует");
+            throw new ObjectIsNull("Фильма с таким номером не сущесвует");
         }
         return films.get(id);
+    }
+
+    @Override
+    public boolean checkForAvailability(int id) {
+        return films.containsKey(id);
+    }
+
+    @Override
+    public List<Film> getBestFilms(int count) {
+        return films.values().stream()
+                .sorted((a, b) -> b.getLikes().size() - a.getLikes().size())
+                .limit(count)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Film addLike(int id, int userId) {
+        if (!checkForAvailability(id)) {
+            throw new ObjectIsNull("film с id = " + id + " не найден");
+        }
+        Film film = getFilmById(id);
+        film.getLikes().add(userId);
+        return film;
     }
 
     private void validate(Film film) {

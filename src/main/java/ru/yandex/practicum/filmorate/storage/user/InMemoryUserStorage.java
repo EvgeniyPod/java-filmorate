@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.validation.ValidationException;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -64,6 +65,68 @@ public class InMemoryUserStorage implements UserStorage {
             throw new ObjectIsNull("Внимание пользователя с таким номером не существует!");
         }
         return users.get(id);
+    }
+
+    @Override
+    public boolean checkForAvailability(int id) {
+        return users.containsKey(id);
+    }
+
+    @Override
+    public User addFriend(int id, int friendId) {
+        if (!checkForAvailability(id)) {
+            throw new ObjectIsNull("Пользователя с id = " + id + " нет.");
+        }
+        if (!checkForAvailability(friendId)) {
+            throw new ObjectIsNull("Пользователя с id = " + friendId + " нет.");
+        }
+        User user = getUserById(id);
+        user.getFriends().add(friendId);
+        User friendUser = getUserById(friendId);
+        friendUser.getFriends().add(id);
+        return user;
+    }
+
+    @Override
+    public User deleteFriend(int id, int friendId) {
+        User user = getUserById(id);
+        if (checkForAvailability(id) && checkForAvailability(friendId)) {
+            user.getFriends().remove(friendId);
+        } else if (!checkForAvailability(id)) {
+            throw new ObjectIsNull("Пользователя с id = " + id + " нет.");
+        } else {
+            throw new ObjectIsNull("Пользователя с friendId = " + friendId + " нет.");
+        }
+        user.getFriends().remove(friendId);
+        return user;
+    }
+
+    @Override
+    public List<User> getUsersFriends(int id) {
+        User user = getUserById(id);
+        if (user == null) {
+            throw new ObjectIsNull("Пользователя с id = " + id + " нет.");
+        }
+        return user.getFriends().stream()
+                .map(this::getUserById)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<User> getCommonFriends(int id, int otherId) {
+        User firstUser = getUserById(id);
+        if (firstUser == null) {
+            throw new ObjectIsNull("Пользователя с id = " + id + " нет.");
+        }
+        User secondUser = getUserById(otherId);
+        if (secondUser == null) {
+            throw new ObjectIsNull("Пользователя с id = " + otherId + " нет.");
+        }
+        return firstUser.getFriends()
+                .stream()
+                .filter(f -> secondUser.getFriends().contains(f))
+                .map(this::getUserById)
+                .collect(Collectors.toList());
     }
 
     private void validate(User user) {
