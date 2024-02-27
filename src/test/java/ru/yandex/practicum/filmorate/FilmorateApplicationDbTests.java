@@ -78,7 +78,7 @@ public class FilmorateApplicationDbTests {
         assertThat(user)
                 .isNotNull()
                 .usingRecursiveComparison()
-                .isEqualTo(userStorage.getUserById(1));
+                .isEqualTo(userStorage.getUserById(user.getId()));
     }
 
     @Test
