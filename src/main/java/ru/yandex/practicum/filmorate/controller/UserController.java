@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.user.UserService;
+
 import java.util.List;
 
 @Slf4j
@@ -49,7 +50,7 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}/friends")
-    public  List<User> getFriends(@PathVariable int id) {
+    public List<User> getFriends(@PathVariable int id) {
         return userService.getFriendsOfUser(id);
     }
 
