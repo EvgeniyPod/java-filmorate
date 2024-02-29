@@ -17,7 +17,7 @@ import java.util.List;
 public class UserController {
 
     private UserService userService;
-    
+
     @PostMapping(value = "/users")
     public User addUser(@Valid @RequestBody User user) {
         log.info("POST-Запрос на добавление пользователя.");
@@ -72,5 +72,4 @@ public class UserController {
         log.info("GET-Запрос на получение общих друзей пользователей с id = {} и otherId = {}.", id, otherId);
         return userService.getCommonFriends(id, otherId);
     }
-
 }
