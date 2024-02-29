@@ -5,9 +5,9 @@ import lombok.Getter;
 @Getter
 public class FilmDbGenre {
     private int filmId;
-    private int genreId;
+    private Integer genreId;
 
-    public FilmDbGenre(int filmId, int genreId) {
+    public FilmDbGenre(int filmId, Integer genreId) {
         this.filmId = filmId;
         this.genreId = genreId;
     }

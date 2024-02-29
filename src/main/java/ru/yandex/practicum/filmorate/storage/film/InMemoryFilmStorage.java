@@ -21,35 +21,23 @@ public class InMemoryFilmStorage implements FilmStorage {
     private int generatorId = 1;
 
     @Override
-    public Film addFilm(@RequestBody Film film) {
-        if (film != null) {
-            validate(film);
-            if (film.getLikes() == null) {
-                Set<Integer> usersWhoLikeFilm = new HashSet<>();
-                film.setLikes(usersWhoLikeFilm);
-            }
-            film.setId(generatorId++);
-            films.put(film.getId(), film);
-        } else {
-            log.error("Передан пустой объект");
-            throw new NullPointerException("Объект не может быть пустым");
+    public Film addFilm(Film film) {
+        if (film.getId() == 0 && !films.containsValue(film)) {
+            film.setId(generatorId);
         }
+        film.setLikes(new HashSet<>());
+        films.put(film.getId(), film);
+        generatorId++;
         return film;
     }
 
     @Override
-    public Film updateFilm(@RequestBody Film film) {
-        if (film != null && films.containsKey(film.getId())) {
-            validate(film);
-            Film updateFilm = films.get(film.getId());
-            updateFilm.setName(film.getName());
-            updateFilm.setDescription(film.getDescription());
-            updateFilm.setReleaseDate(film.getReleaseDate());
-            updateFilm.setDuration(film.getDuration());
-            films.put(film.getId(), updateFilm);
-        } else {
-            log.error("Передан пустой объект");
-            throw new NullPointerException("Объект не может быть пустым");
+    public Film updateFilm(Film film) {
+        if (films.containsKey(film.getId())) {
+            films.put(film.getId(), film);
+        }
+        if (film.getLikes() == null) {
+            film.setLikes(new HashSet<>());
         }
         return film;
     }
@@ -73,7 +61,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getBestFilms(int count) {
+    public List<Film> getTopFilms(int count) {
         return films.values().stream()
                 .sorted((a, b) -> b.getLikes().size() - a.getLikes().size())
                 .limit(count)
@@ -88,32 +76,5 @@ public class InMemoryFilmStorage implements FilmStorage {
         Film film = getFilmById(id);
         film.getLikes().add(userId);
         return film;
-    }
-
-    private void validate(Film film) {
-        if (film == null) {
-            log.error("Передан пустой объект");
-            throw new ValidationException("Объект не может быть пустым");
-        }
-
-        if (StringUtils.isEmpty(film.getName())) {
-            log.error("Фильм не имеет названия");
-            throw new ValidationException("Фильм должен иметь название");
-        }
-
-        if (film.getDescription().length() > 200) {
-            log.error("Описание фильма превышает лимит в 200 символов");
-            throw new ValidationException("Описание фильма не должно превышать более 200 символов");
-        }
-
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            log.error("Релиз фильма состоялся раньше 28 декабря 1895 года");
-            throw new ValidationException("Релиз фильма не мог состояться раньше 28 декабря 1895 года");
-        }
-
-        if (film.getDuration() < 0) {
-            log.error("Продолжительность фильма отрицательное число");
-            throw new ValidationException("Продолжительность фильма не может быть отрицательным числом");
-        }
     }
 }

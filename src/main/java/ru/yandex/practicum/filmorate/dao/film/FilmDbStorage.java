@@ -120,7 +120,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getBestFilms(int count) {
+    public List<Film> getTopFilms (int count) {
         String sql = "select f.film_id from films as f left join user_likes as ul on f.film_id" +
                 "  = ul.film_id group by f.film_id order by count(user_id) desc limit ?";
         return jdbcTemplate.query(sql, (rs, rowNum) -> getFilmById(rs.getInt("film_id")), count);
@@ -133,7 +133,7 @@ public class FilmDbStorage implements FilmStorage {
         return getFilmById(id);
     }
 
-    private Collection<Genre> findGenresByFilmId(long filmId) {
+    private Collection<Genre> findGenresByFilmId(int filmId) {
         String sql = "select distinct * from (select genre_id from film_genre where film_id " +
                 "= ? order by genre_id) as t join genre as g on t.genre_id = g.genre_id";
         return jdbcTemplate.query(sql, (rs, rowNum) -> new Genre(rs.getInt("genre_id"),
@@ -144,7 +144,7 @@ public class FilmDbStorage implements FilmStorage {
         return new FilmDbGenre(rs.getInt("film_id"), rs.getInt("genre_id"));
     }
 
-    private Mpa findMpaByCategoryId(long categoryId) {
+    private Mpa findMpaByCategoryId(int categoryId) {
         SqlRowSet userRows = jdbcTemplate.queryForRowSet("select * from category where category_id = ?", categoryId);
         if (userRows.next()) {
             Mpa mpa = new Mpa(
@@ -160,7 +160,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Film makeFilm(ResultSet rs) throws SQLException {
-        long id = rs.getInt("film_id");
+        int id = rs.getInt("film_id");
         return new Film(
                 rs.getInt("film_id"),
                 rs.getString("film_name"),

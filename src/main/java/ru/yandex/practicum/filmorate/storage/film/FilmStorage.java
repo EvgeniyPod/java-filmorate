@@ -16,7 +16,7 @@ public interface FilmStorage {
 
     boolean checkForAvailability(int id);
 
-    List<Film> getBestFilms(int count);
+    List<Film> getTopFilms(int count);
 
     Film addLike(int id, int userId);
 

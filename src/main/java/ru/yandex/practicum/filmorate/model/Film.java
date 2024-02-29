@@ -1,21 +1,27 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 import java.util.*;
 
+
 @Data
 public class Film {
-
+    @EqualsAndHashCode.Exclude
     private int id;
+    @NotBlank
+    @NotEmpty
     private String name;
     private String description;
     private LocalDate releaseDate;
     private int duration;
     private Mpa mpa;
     private List<Genre> genres;
-    private Set<Integer> likes;
+    private Set<Integer> likes = new HashSet<>();
 
     public Film(int id, String name, String description, LocalDate releaseDate, int duration, Mpa mpa, ArrayList<Genre> genres) {
         this.id = id;
