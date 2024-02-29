@@ -17,7 +17,7 @@ import java.util.List;
 public class UserController {
 
     private UserService userService;
-
+    
     @PostMapping(value = "/users")
     public User addUser(@Valid @RequestBody User user) {
         log.info("POST-Запрос на добавление пользователя.");
