@@ -2,14 +2,10 @@ package ru.yandex.practicum.filmorate.storage.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.validation.ObjectIsNull;
-import ru.yandex.practicum.filmorate.validation.ValidationException;
 
-import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
