@@ -2,15 +2,12 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.util.StringUtils;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.validation.ObjectIsNull;
-import ru.yandex.practicum.filmorate.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -20,35 +17,23 @@ public class InMemoryFilmStorage implements FilmStorage {
     private int generatorId = 1;
 
     @Override
-    public Film addFilm(@RequestBody Film film) {
-        if (film != null) {
-            validate(film);
-            if (film.getLikes() == null) {
-                Set<Integer> usersWhoLikeFilm = new HashSet<>();
-                film.setLikes(usersWhoLikeFilm);
-            }
-            film.setId(generatorId++);
-            films.put(film.getId(), film);
-        } else {
-            log.error("Передан пустой объект");
-            throw new NullPointerException("Объект не может быть пустым");
+    public Film addFilm(Film film) {
+        if (film.getId() == 0 && !films.containsValue(film)) {
+            film.setId(generatorId);
         }
+        film.setLikes(new HashSet<>());
+        films.put(film.getId(), film);
+        generatorId++;
         return film;
     }
 
     @Override
-    public Film updateFilm(@RequestBody Film film) {
-        if (film != null && films.containsKey(film.getId())) {
-            validate(film);
-            Film updateFilm = films.get(film.getId());
-            updateFilm.setName(film.getName());
-            updateFilm.setDescription(film.getDescription());
-            updateFilm.setReleaseDate(film.getReleaseDate());
-            updateFilm.setDuration(film.getDuration());
-            films.put(film.getId(), updateFilm);
-        } else {
-            log.error("Передан пустой объект");
-            throw new NullPointerException("Объект не может быть пустым");
+    public Film updateFilm(Film film) {
+        if (films.containsKey(film.getId())) {
+            films.put(film.getId(), film);
+        }
+        if (film.getLikes() == null) {
+            film.setLikes(new HashSet<>());
         }
         return film;
     }
@@ -61,35 +46,31 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film getFilmById(@PathVariable int id) {
         if (!films.containsKey(id)) {
-            throw new ObjectIsNull("Фильма с таким номерлм не сущесвует");
+            throw new ObjectIsNull("Фильма с таким номером не сущесвует");
         }
         return films.get(id);
     }
 
-    private void validate(Film film) {
-        if (film == null) {
-            log.error("Передан пустой объект");
-            throw new ValidationException("Объект не может быть пустым");
-        }
+    @Override
+    public boolean checkForAvailability(int id) {
+        return films.containsKey(id);
+    }
 
-        if (StringUtils.isEmpty(film.getName())) {
-            log.error("Фильм не имеет названия");
-            throw new ValidationException("Фильм должен иметь название");
-        }
+    @Override
+    public List<Film> getTopFilms(int count) {
+        return films.values().stream()
+                .sorted((a, b) -> b.getLikes().size() - a.getLikes().size())
+                .limit(count)
+                .collect(Collectors.toList());
+    }
 
-        if (film.getDescription().length() > 200) {
-            log.error("Описание фильма превышает лимит в 200 символов");
-            throw new ValidationException("Описание фильма не должно превышать более 200 символов");
+    @Override
+    public Film addLike(int id, int userId) {
+        if (!checkForAvailability(id)) {
+            throw new ObjectIsNull("film с id = " + id + " не найден");
         }
-
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            log.error("Релиз фильма состоялся раньше 28 декабря 1895 года");
-            throw new ValidationException("Релиз фильма не мог состояться раньше 28 декабря 1895 года");
-        }
-
-        if (film.getDuration() < 0) {
-            log.error("Продолжительность фильма отрицательное число");
-            throw new ValidationException("Продолжительность фильма не может быть отрицательным числом");
-        }
+        Film film = getFilmById(id);
+        film.getLikes().add(userId);
+        return film;
     }
 }
